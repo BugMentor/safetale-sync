@@ -48,5 +48,4 @@ def test_websocket_disconnect_cleans_up(sync_client):
     with sync_client.websocket_connect("/ws/story/e2e-session-3") as ws3:
         ws3.send_bytes(b"after")
         # Only ws3 is in session now (ws2 was in different connection lifecycle)
-        # So no other client to receive - just ensure no crash
-        pass
+        # No other client to receive; just ensure no crash.

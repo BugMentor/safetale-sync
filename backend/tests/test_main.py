@@ -7,7 +7,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from fastapi import WebSocketDisconnect
 
-from main import app, websocket_story, _get_story_graph
+from main import websocket_story, _get_story_graph
 
 
 def test_get_story_graph_builds_and_caches():

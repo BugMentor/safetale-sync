@@ -44,7 +44,7 @@ async def test_check_llm_responding_none_content():
     mock_llm = MagicMock()
     mock_llm.ainvoke = AsyncMock(return_value=MagicMock(spec=[]))
     with patch("llm_client.get_llm", return_value=mock_llm):
-        ok, detail = await check_llm_responding()
+        ok, _detail = await check_llm_responding()
     assert ok is False
 
 

@@ -1,0 +1,34 @@
+[MASTER]
+# Lint all tracked Python files when run from repo root
+jobs=0
+
+[MESSAGES CONTROL]
+# Docstrings: not required for tests and minimal modules
+disable=
+    missing-module-docstring,
+    missing-class-docstring,
+    missing-function-docstring,
+# Intentional patterns
+    broad-exception-caught,
+    import-outside-toplevel,
+    too-many-return-statements,
+    global-statement,
+    unused-argument,
+# Test and internal access
+    protected-access,
+    redefined-outer-name,
+# Naming: module-level cache is conventional
+    invalid-name,
+# Unused import/variable in tests or optional code paths
+    unused-import,
+    unused-variable,
+# False positive on dynamic client.search
+    no-member,
+# Style
+    unnecessary-pass,
+
+[FORMAT]
+max-line-length=120
+
+[BASIC]
+good-names=_,i,j,ws,id,db
