@@ -9,10 +9,9 @@ import * as Y from 'yjs'
 const SYNC_REQUEST = 0x00
 const SYNC_UPDATE = 0x01
 
-function getWsUrl(sessionId: string): string {
-  const base = import.meta.env.DEV
-    ? `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}`
-    : `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}`
+export function getWsUrl(sessionId: string): string {
+  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+  const base = `${protocol}//${window.location.host}`
   return `${base}/ws/story/${encodeURIComponent(sessionId)}`
 }
 

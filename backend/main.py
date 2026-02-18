@@ -71,7 +71,7 @@ def _get_story_graph():
 
 @app.post("/api/generate-story", response_model=GenerateStoryResponse)
 async def generate_story(body: GenerateStoryRequest) -> GenerateStoryResponse:
-    """Run the LangGraph story agent and return the generated continuation."""
+    """Run the story agent and return the continuation."""
     if not body.user_input or not body.user_input.strip():
         return GenerateStoryResponse(response="What would you like to happen next in the story?")
     graph = _get_story_graph()
