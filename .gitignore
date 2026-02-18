@@ -38,3 +38,26 @@ Thumbs.db
 dist/
 build/
 *.manifest
+coverage/
+
+# Node
+node_modules/
+.npm
+.yarn/
+.pnp.*
+*.tsbuildinfo
+
+# Playwright / E2E
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Local / cache
+.cache/
+tmp/
+temp/
+*.sqlite
+*.db
