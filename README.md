@@ -1,6 +1,6 @@
 # SafeTale Sync
 
-Real-time collaborative AI storytelling platform. Built with FastAPI, React, Yjs (CRDTs), LangGraph, and local RAG. **Fully local and open-source**—no cloud LLMs.
+Real-time collaborative AI storytelling platform. Built with FastAPI, React, Yjs (CRDTs), LangGraph, and local RAG. **Fully local and open-source**—no cloud LLMs. We use [git-flow](GITFLOW.md): `main` = production, `develop` = integration; do new work in `feature/*` branches.
 
 ## Tech stack
 
