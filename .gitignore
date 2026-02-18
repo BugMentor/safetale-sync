@@ -39,6 +39,7 @@ dist/
 build/
 *.manifest
 coverage/
+.coverage.*
 
 # Node
 node_modules/
