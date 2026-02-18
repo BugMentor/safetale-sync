@@ -1,0 +1,9 @@
+# SafeTale Sync - Backend
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+langchain>=0.1.0
+langchain-core>=0.3.0
+langchain-ollama>=0.1.0
+langgraph>=0.0.20
+qdrant-client>=1.7.0
+nomic>=2.0.0
