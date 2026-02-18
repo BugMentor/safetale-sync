@@ -39,3 +39,12 @@ dist/
 build/
 *.manifest
 coverage/
+
+# Frontend / tooling
+node_modules/
+playwright-report/
+playwright/.cache/
+test-results/
+.vite/
+.next/
+out/
