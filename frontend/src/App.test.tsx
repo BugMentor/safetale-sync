@@ -3,8 +3,13 @@ import { render, screen } from '@testing-library/react'
 import App from './App'
 
 describe('App', () => {
-  it('renders the story editor', () => {
+  it('renders the story editor with SafeTale Sync title', () => {
     render(<App />)
     expect(screen.getByText(/SafeTale Sync/i)).toBeInTheDocument()
+  })
+
+  it('renders the session placeholder', () => {
+    render(<App />)
+    expect(screen.getByPlaceholderText('Session ID')).toBeInTheDocument()
   })
 })
