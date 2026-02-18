@@ -35,6 +35,16 @@ npm run dev
 
 Open [http://localhost:5173](http://localhost:5173). Use the same session ID in multiple tabs to see collaborative editing.
 
+### Frontend E2E tests (Playwright)
+
+```bash
+cd frontend
+npm install
+npx playwright install chromium   # first time only
+npm run test:e2e                  # starts dev server and runs tests
+npm run test:e2e:ui               # interactive UI mode
+```
+
 ### RAG (optional)
 
 1. Run **Qdrant** (e.g. Docker): `docker run -p 6333:6333 qdrant/qdrant`
@@ -45,4 +55,4 @@ Open [http://localhost:5173](http://localhost:5173). Use the same session ID in 
 ## Project layout
 
 - `backend/` — FastAPI app, LangGraph agent, LLM client, WebSocket manager, RAG tools and ingest script
-- `frontend/` — Vite React app with Yjs-backed collaborative text area
+- `frontend/` — Vite React app with Yjs-backed collaborative text area and Playwright E2E tests in `e2e/`
