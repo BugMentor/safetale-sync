@@ -26,6 +26,8 @@ disable=
     no-member,
 # Style
     unnecessary-pass,
+# Pydantic / data classes
+    too-few-public-methods,
 
 [FORMAT]
 max-line-length=120
