@@ -1,10 +1,11 @@
 [run]
 source = .
 omit =
-    tests/*
-    scripts/*
     .venv/*
     venv/*
+    tests/*
+    scripts/*
+    */site-packages/*
 
 [report]
 fail_under = 100
@@ -12,3 +13,5 @@ exclude_lines =
     pragma: no cover
     def __repr__
     raise NotImplementedError
+    if TYPE_CHECKING:
+    if __name__ == .__main__.:

@@ -12,6 +12,7 @@ ENV/
 *.egg
 .pytest_cache/
 .coverage
+.coverage.*
 htmlcov/
 .mypy_cache/
 .ruff_cache/
@@ -39,19 +40,19 @@ dist/
 build/
 *.manifest
 coverage/
-.coverage.*
 
-# Node
+# Frontend / tooling
 node_modules/
 .npm
 .yarn/
 .pnp.*
 *.tsbuildinfo
-
-# Playwright / E2E
-test-results/
 playwright-report/
 playwright/.cache/
+test-results/
+.vite/
+.next/
+out/
 
 # Jupyter
 .ipynb_checkpoints/

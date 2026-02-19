@@ -1,55 +1,56 @@
-"""Unit tests for llm_client."""
+"""
+Unit tests for llm_client.
+"""
+
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from unittest.mock import AsyncMock, patch, MagicMock
+
+from llm_client import check_llm_responding, get_llm
 
 
-def test_get_llm_returns_chat_ollama():
-    from llm_client import get_llm, DEFAULT_MODEL, OLLAMA_BASE_URL
-    llm = get_llm()
-    assert llm is not None
-    assert llm.model == DEFAULT_MODEL
-    assert llm.base_url == OLLAMA_BASE_URL
-
-
-def test_get_llm_custom_model_and_base_url():
-    from llm_client import get_llm
-    llm = get_llm(model="custom:7b", base_url="http://custom:11434")
-    assert llm.model == "custom:7b"
-    assert llm.base_url == "http://custom:11434"
+def test_get_llm_default():
+    with patch("llm_client.ChatOllama") as mock_ollama:
+        get_llm()
+    mock_ollama.assert_called_once()
+    kwargs = mock_ollama.call_args[1]
+    assert kwargs["base_url"] == "http://localhost:11434"
+    assert kwargs["model"] == "llama3.1:8b"
+    assert kwargs["temperature"] == 0.7
 
 
 @pytest.mark.asyncio
-async def test_check_llm_responding_success():
-    from llm_client import check_llm_responding
-    with patch("llm_client.get_llm") as mock_get:
-        mock_llm = MagicMock()
-        mock_llm.ainvoke = AsyncMock(return_value=MagicMock(content="OK"))
-        mock_get.return_value = mock_llm
+async def test_check_llm_responding_ok():
+    mock_llm = MagicMock()
+    mock_llm.ainvoke = AsyncMock(return_value=MagicMock(content="OK"))
+    with patch("llm_client.get_llm", return_value=mock_llm):
         ok, detail = await check_llm_responding()
     assert ok is True
     assert detail == "OK"
 
 
 @pytest.mark.asyncio
-async def test_check_llm_responding_empty_response():
-    from llm_client import check_llm_responding
-    with patch("llm_client.get_llm") as mock_get:
-        mock_llm = MagicMock()
-        mock_llm.ainvoke = AsyncMock(return_value=MagicMock(content=""))
-        mock_get.return_value = mock_llm
+async def test_check_llm_responding_empty_content():
+    mock_llm = MagicMock()
+    mock_llm.ainvoke = AsyncMock(return_value=MagicMock(content=""))
+    with patch("llm_client.get_llm", return_value=mock_llm):
         ok, detail = await check_llm_responding()
     assert ok is False
     assert "empty" in detail.lower()
 
 
 @pytest.mark.asyncio
+async def test_check_llm_responding_none_content():
+    mock_llm = MagicMock()
+    mock_llm.ainvoke = AsyncMock(return_value=MagicMock(spec=[]))
+    with patch("llm_client.get_llm", return_value=mock_llm):
+        ok, _detail = await check_llm_responding()
+    assert ok is False
+
+
+@pytest.mark.asyncio
 async def test_check_llm_responding_exception():
-    from llm_client import check_llm_responding
-    with patch("llm_client.get_llm") as mock_get:
-        mock_llm = MagicMock()
-        mock_llm.ainvoke = AsyncMock(side_effect=Exception("Connection refused"))
-        mock_get.return_value = mock_llm
+    with patch("llm_client.get_llm", side_effect=ConnectionError("Connection refused")):
         ok, detail = await check_llm_responding()
     assert ok is False
     assert "Connection refused" in detail

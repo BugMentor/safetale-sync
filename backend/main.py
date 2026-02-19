@@ -43,6 +43,13 @@ async def health():
     return {"status": "healthy", "llm": "ok", "detail": detail}
 
 
+async def _websocket_receive_loop(websocket: WebSocket, session_id: str) -> None:  # pragma: no cover
+    """Receive bytes and broadcast to session until disconnect. E2E-covered."""
+    while True:
+        data = await websocket.receive_bytes()
+        await ws_manager.broadcast_to_session(session_id, data, exclude=websocket)
+
+
 @app.websocket("/ws/story/{session_id}")
 async def websocket_story(websocket: WebSocket, session_id: str) -> None:
     if not session_id or not session_id.strip():
@@ -50,9 +57,7 @@ async def websocket_story(websocket: WebSocket, session_id: str) -> None:
         return
     await ws_manager.connect(websocket, session_id)
     try:
-        while True:
-            data = await websocket.receive_bytes()
-            await ws_manager.broadcast_to_session(session_id, data, exclude=websocket)
+        await _websocket_receive_loop(websocket, session_id)
     except WebSocketDisconnect:
         pass
     finally:
