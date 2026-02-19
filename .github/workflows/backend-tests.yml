@@ -1,9 +1,9 @@
-name: Pylint
+name: Backend tests
 
 on: [push]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -17,8 +17,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pylint
         pip install -r backend/requirements.txt -r backend/requirements-dev.txt
-    - name: Analysing the code with pylint
+    - name: Run tests
       run: |
-        PYTHONPATH=backend pylint $(git ls-files '*.py')
+        cd backend && python -m pytest tests/ -v --cov=. --cov-report=term-missing --cov-fail-under=100

@@ -25,6 +25,16 @@ uvicorn main:app --reload --host 0.0.0.0 --port 8000
 
 Requires **Ollama** running with `llama3.1:8b` at `http://localhost:11434`.
 
+### Backend tests (pytest)
+
+```bash
+cd backend
+pip install -r requirements.txt
+pytest tests/ -v
+```
+
+Unit tests cover `llm_client`, `story_agent` (safety, LLM fallback, RAG node), `lore_tools`, `ws_manager`, and `agent_state`. Integration tests cover `GET /api/health`, `POST /api/generate-story`, and WebSocket `/ws/story/{session_id}`. Ollama and Qdrant are mocked so tests run without external services.
+
 ### Frontend
 
 ```bash
@@ -35,6 +45,16 @@ npm run dev
 
 Open [http://localhost:5173](http://localhost:5173). Use the same session ID in multiple tabs to see collaborative editing.
 
+### Frontend E2E tests (Playwright)
+
+```bash
+cd frontend
+npm install
+npx playwright install chromium   # first time only
+npm run test:e2e                  # starts dev server and runs tests
+npm run test:e2e:ui               # interactive UI mode
+```
+
 ### RAG (optional)
 
 1. Run **Qdrant** (e.g. Docker): `docker run -p 6333:6333 qdrant/qdrant`
@@ -42,7 +62,21 @@ Open [http://localhost:5173](http://localhost:5173). Use the same session ID in 
    `cd backend && python -m scripts.ingest_lore data/sample_tale.txt`
 3. The `/api/generate-story` flow will use `search_lore` to pull thematic context before generating.
 
+## Backend testing (E2E + unit, 100% coverage)
+
+Backend tests are **E2E-style** (HTTP and WebSocket against the FastAPI app in-process) plus **unit tests** for all modules. No live Ollama or Qdrant is required; tests use mocks.
+
+```bash
+cd backend
+pip install -r requirements-dev.txt
+python -m pytest tests/ -v --cov=. --cov-report=term-missing --cov-fail-under=100
+```
+
+- **E2E coverage:** `GET /api/health`, `POST /api/generate-story`, `GET /`, WebSocket `/ws/story/{session_id}` (connect, send/receive bytes, broadcast, empty session rejected).
+- **Unit coverage:** `llm_client`, `ws_manager`, `story_agent`, `lore_tools`, `main` (including graph caching and websocket handler paths).
+- **Optional:** To run against a **live server** (e.g. for manual or CI smoke tests), start the backend with `uvicorn main:app --host 0.0.0.0 --port 8000` and use `curl` or the frontend against it; the pytest suite does not start a separate process.
+
 ## Project layout
 
-- `backend/` — FastAPI app, LangGraph agent, LLM client, WebSocket manager, RAG tools and ingest script
-- `frontend/` — Vite React app with Yjs-backed collaborative text area
+- `backend/` — FastAPI app, LangGraph agent, LLM client, WebSocket manager, RAG tools and ingest script; **pytest** unit and integration tests in `tests/`
+- `frontend/` — Vite React app with Yjs-backed collaborative text area and Playwright E2E tests in `e2e/`

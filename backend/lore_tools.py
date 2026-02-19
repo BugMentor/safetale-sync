@@ -21,7 +21,6 @@ def search_lore(query: str, top_k: int = 3) -> str:
     query = query.strip()
     try:
         from qdrant_client import QdrantClient
-        from qdrant_client.models import Distance, VectorParams
         from nomic import embed
     except ImportError:
         return ""
