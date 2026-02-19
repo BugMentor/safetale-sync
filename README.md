@@ -25,6 +25,16 @@ uvicorn main:app --reload --host 0.0.0.0 --port 8000
 
 Requires **Ollama** running with `llama3.1:8b` at `http://localhost:11434`.
 
+### Backend tests (pytest)
+
+```bash
+cd backend
+pip install -r requirements.txt
+pytest tests/ -v
+```
+
+Unit tests cover `llm_client`, `story_agent` (safety, LLM fallback, RAG node), `lore_tools`, `ws_manager`, and `agent_state`. Integration tests cover `GET /api/health`, `POST /api/generate-story`, and WebSocket `/ws/story/{session_id}`. Ollama and Qdrant are mocked so tests run without external services.
+
 ### Frontend
 
 ```bash
@@ -34,6 +44,16 @@ npm run dev
 ```
 
 Open [http://localhost:5173](http://localhost:5173). Use the same session ID in multiple tabs to see collaborative editing.
+
+### Frontend E2E tests (Playwright)
+
+```bash
+cd frontend
+npm install
+npx playwright install chromium   # first time only
+npm run test:e2e                  # starts dev server and runs tests
+npm run test:e2e:ui               # interactive UI mode
+```
 
 ### RAG (optional)
 
@@ -58,5 +78,5 @@ python -m pytest tests/ -v --cov=. --cov-report=term-missing --cov-fail-under=10
 
 ## Project layout
 
-- `backend/` — FastAPI app, LangGraph agent, LLM client, WebSocket manager, RAG tools and ingest script
-- `frontend/` — Vite React app with Yjs-backed collaborative text area
+- `backend/` — FastAPI app, LangGraph agent, LLM client, WebSocket manager, RAG tools and ingest script; **pytest** unit and integration tests in `tests/`
+- `frontend/` — Vite React app with Yjs-backed collaborative text area and Playwright E2E tests in `e2e/`
