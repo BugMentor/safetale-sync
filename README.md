@@ -45,7 +45,17 @@ npm run dev
 
 Open [http://localhost:5173](http://localhost:5173). Use the same session ID in multiple tabs to see collaborative editing.
 
-### Frontend E2E tests (Playwright)
+### Frontend tests (Vitest + Playwright)
+
+Unit and integration tests (Vitest):
+
+```bash
+cd frontend
+npm install
+npm run test:run
+```
+
+E2E tests (Playwright; optional, run manually or pre-release):
 
 ```bash
 cd frontend
@@ -75,6 +85,10 @@ python -m pytest tests/ -v --cov=. --cov-report=term-missing --cov-fail-under=10
 - **E2E coverage:** `GET /api/health`, `POST /api/generate-story`, `GET /`, WebSocket `/ws/story/{session_id}` (connect, send/receive bytes, broadcast, empty session rejected).
 - **Unit coverage:** `llm_client`, `ws_manager`, `story_agent`, `lore_tools`, `main` (including graph caching and websocket handler paths).
 - **Optional:** To run against a **live server** (e.g. for manual or CI smoke tests), start the backend with `uvicorn main:app --host 0.0.0.0 --port 8000` and use `curl` or the frontend against it; the pytest suite does not start a separate process.
+
+## CI
+
+On push and pull requests to `main` and `develop`, GitHub Actions runs **backend tests** (pytest) and **frontend tests** (Vitest `npm run test:run`). These checks can be required for merge via branch protection. E2E (Playwright) is not run in CI and can be executed manually or before release.
 
 ## Project layout
 
