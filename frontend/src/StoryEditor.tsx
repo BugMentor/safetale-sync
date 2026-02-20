@@ -22,10 +22,9 @@ export function StoryEditor() {
     const yText = doc.getText('story')
     docRef.current = doc
 
-    const provider = createStoryProvider(sessionId, doc)
+    const provider = createStoryProvider(sessionId, doc, setConnected)
     providerRef.current = provider
     provider.connect()
-    setConnected(true)
 
     const syncToTextarea = (value: string) => {
       prevValueRef.current = value
@@ -57,8 +56,11 @@ export function StoryEditor() {
     // docRef is always present when mounted/handling events
     const yText = docRef.current!.getText('story')
     const op = diffStrings(prev, next)
-    /* v8 ignore if -- @preserve */
-    if (!op) return
+    /* v8 ignore start */
+    if (!op) {
+      return
+    }
+    /* v8 ignore stop */
 
     if (op.type === 'delete') {
       yText.delete(op.index, op.value.length)

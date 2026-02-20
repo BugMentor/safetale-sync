@@ -11,6 +11,10 @@ test.describe('Collaborative Editing', () => {
       await page1.goto('/')
       await page2.goto('/')
 
+      // Use different sessions to ensure independence
+      await page1.getByPlaceholder('Session ID').fill(`indep-1-${Math.random()}`)
+      await page2.getByPlaceholder('Session ID').fill(`indep-2-${Math.random()}`)
+
       const textarea1 = page1.getByPlaceholder(/Write your story here/)
       const textarea2 = page2.getByPlaceholder(/Write your story here/)
 
@@ -36,17 +40,19 @@ test.describe('Collaborative Editing', () => {
       const sessionInput1 = page1.getByPlaceholder('Session ID')
       const sessionInput2 = page2.getByPlaceholder('Session ID')
 
-      await sessionInput1.fill('session-alpha')
-      await sessionInput2.fill('session-beta')
+      const s1 = `alpha-${Math.random()}`
+      const s2 = `beta-${Math.random()}`
+      await sessionInput1.fill(s1)
+      await sessionInput2.fill(s2)
 
-      await expect(sessionInput1).toHaveValue('session-alpha')
-      await expect(sessionInput2).toHaveValue('session-beta')
+      await expect(sessionInput1).toHaveValue(s1)
+      await expect(sessionInput2).toHaveValue(s2)
 
       await context1.close()
       await context2.close()
     })
 
-    test('users in same session can edit simultaneously', async ({ browser }) => {
+    test('users in same session can collaborate', async ({ browser }) => {
       const context1 = await browser.newContext()
       const context2 = await browser.newContext()
       const page1 = await context1.newPage()
@@ -56,20 +62,21 @@ test.describe('Collaborative Editing', () => {
       await page2.goto('/')
 
       // Set same session ID
+      const sharedSession = `shared-${Math.random()}`
       const sessionInput1 = page1.getByPlaceholder('Session ID')
       const sessionInput2 = page2.getByPlaceholder('Session ID')
-      await sessionInput1.fill('shared-session')
-      await sessionInput2.fill('shared-session')
+      await sessionInput1.fill(sharedSession)
+      await sessionInput2.fill(sharedSession)
 
       const textarea1 = page1.getByPlaceholder(/Write your story here/)
       const textarea2 = page2.getByPlaceholder(/Write your story here/)
 
-      // Both can edit
-      await textarea1.fill('User 1 content')
-      await textarea2.fill('User 2 content')
-
-      await expect(textarea1).toHaveValue('User 1 content')
-      await expect(textarea2).toHaveValue('User 2 content')
+      // User 1 types
+      await textarea1.fill('Hello from User 1')
+      
+      // Both should see it
+      await expect(textarea1).toHaveValue('Hello from User 1')
+      await expect(textarea2).toHaveValue('Hello from User 1')
 
       await context1.close()
       await context2.close()
@@ -85,18 +92,29 @@ test.describe('Collaborative Editing', () => {
 
       await page1.goto('/')
       await page2.goto('/')
+      
+      const sharedSession = `simultaneous-${Math.random()}`
+      const sessionInput1 = page1.getByPlaceholder('Session ID')
+      const sessionInput2 = page2.getByPlaceholder('Session ID')
+      await sessionInput1.fill(sharedSession)
+      await sessionInput2.fill(sharedSession)
 
       const textarea1 = page1.getByPlaceholder(/Write your story here/)
       const textarea2 = page2.getByPlaceholder(/Write your story here/)
 
-      // Simulate simultaneous typing
-      await Promise.all([
-        textarea1.type('User 1 typing', { delay: 10 }),
-        textarea2.type('User 2 typing', { delay: 10 })
-      ])
+      // Wait for both to be synced before typing
+      await expect(page1.getByText('Synced')).toBeVisible()
+      await expect(page2.getByText('Synced')).toBeVisible()
 
-      await expect(textarea1).toHaveValue('User 1 typing')
-      await expect(textarea2).toHaveValue('User 2 typing')
+      // Simulate simultaneous typing by having both type different things
+      await textarea1.pressSequentially('A')
+      await textarea2.pressSequentially('X')
+
+      // Wait for both characters to appear on both pages (Yjs merge)
+      await expect(textarea1).toHaveValue(/A/)
+      await expect(textarea1).toHaveValue(/X/)
+      await expect(textarea2).toHaveValue(/A/)
+      await expect(textarea2).toHaveValue(/X/)
 
       await context1.close()
       await context2.close()

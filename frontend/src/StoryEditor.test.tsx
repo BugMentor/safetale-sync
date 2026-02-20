@@ -5,8 +5,11 @@ import { StoryEditor } from './StoryEditor'
 const mockConnect = vi.fn()
 const mockDisconnect = vi.fn()
 vi.mock('./yjsProvider', () => ({
-  createStoryProvider: () => ({
-    connect: mockConnect,
+  createStoryProvider: (_id: string, _doc: any, onStatusChange?: (c: boolean) => void) => ({
+    connect: () => {
+      mockConnect()
+      onStatusChange?.(true)
+    },
     disconnect: mockDisconnect,
   }),
 }))

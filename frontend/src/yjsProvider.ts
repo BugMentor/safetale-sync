@@ -15,7 +15,11 @@ export function getWsUrl(sessionId: string): string {
   return `${base}/ws/story/${encodeURIComponent(sessionId)}`
 }
 
-export function createStoryProvider(sessionId: string, doc: Y.Doc): {
+export function createStoryProvider(
+  sessionId: string,
+  doc: Y.Doc,
+  onStatusChange?: (connected: boolean) => void
+): {
   connect: () => void
   disconnect: () => void
 } {
@@ -45,7 +49,13 @@ export function createStoryProvider(sessionId: string, doc: Y.Doc): {
     ws.binaryType = 'arraybuffer'
 
     ws.onopen = () => {
+      onStatusChange?.(true)
       requestSync()
+      // Also send our current state so others joining or already there get it
+      const state = Y.encodeStateAsUpdate(doc)
+      // Standard Yjs empty update is usually 2 bytes [0, 0] or similar, 
+      // but let's just send it if it has any potential content.
+      sendUpdate(state)
     }
 
     ws.onmessage = (event: MessageEvent<ArrayBuffer>) => {
@@ -66,10 +76,12 @@ export function createStoryProvider(sessionId: string, doc: Y.Doc): {
 
     ws.onclose = () => {
       ws = null
+      onStatusChange?.(false)
     }
 
     ws.onerror = () => {
       ws = null
+      onStatusChange?.(false)
     }
   }
 
