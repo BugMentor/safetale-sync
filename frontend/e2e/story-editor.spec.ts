@@ -3,6 +3,9 @@ import { test, expect } from '@playwright/test'
 test.describe('StoryEditor Component', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
+    const uniqueSession = `test-session-${Math.random().toString(36).substring(7)}`
+    await page.getByPlaceholder('Session ID').fill(uniqueSession)
+    await expect(page.getByText('Synced')).toBeVisible()
   })
 
   test.describe('UI Rendering - Positive Cases', () => {

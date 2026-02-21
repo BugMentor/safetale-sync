@@ -88,15 +88,20 @@ test.describe('End-to-End User Flows', () => {
       // User 1 starts the story
       const textarea1 = page1.getByPlaceholder(/Write your story here/)
       await textarea1.fill('User 1: Once upon a time')
-
-      // User 2 continues
+      
+      // User 2 sees initial content (verify sync first)
       const textarea2 = page2.getByPlaceholder(/Write your story here/)
-      await textarea2.fill('User 2: There was a magical forest')
+      await expect(textarea2).toHaveValue('User 1: Once upon a time')
 
-      // Both can see their own edits
-      await expect(textarea1).toHaveValue('User 1: Once upon a time')
-      await expect(textarea2).toHaveValue('User 2: There was a magical forest')
+      // User 2 adds more
+      // Using press+type to append instead of replace
+      await textarea2.press('Control+End') // or just click/focus
+      await textarea2.type(' and User 2 joined')
 
+      // Both can see merged edits
+      await expect(textarea1).toHaveValue('User 1: Once upon a time and User 2 joined')
+      await expect(textarea2).toHaveValue('User 1: Once upon a time and User 2 joined')
+ 
       await context1.close()
       await context2.close()
     })
