@@ -69,6 +69,41 @@ describe('StoryEditor', () => {
     expect(textarea).toHaveValue('Hello')
   })
 
+  describe('Theme Toggle', () => {
+    beforeEach(() => {
+      localStorage.clear()
+      document.documentElement.classList.remove('dark')
+    })
+
+    it('toggles theme and updates document class', () => {
+      render(<StoryEditor />)
+      const button = screen.getByLabelText('Toggle theme')
+
+      // Default is light (based on mock matchMedia)
+      expect(document.documentElement.classList.contains('dark')).toBe(false)
+
+      fireEvent.click(button)
+      expect(document.documentElement.classList.contains('dark')).toBe(true)
+      expect(localStorage.getItem('theme')).toBe('dark')
+
+      fireEvent.click(button)
+      expect(document.documentElement.classList.contains('dark')).toBe(false)
+      expect(localStorage.getItem('theme')).toBe('light')
+    })
+
+    it('initializes from localStorage', () => {
+      localStorage.setItem('theme', 'dark')
+      render(<StoryEditor />)
+      expect(document.documentElement.classList.contains('dark')).toBe(true)
+    })
+
+    it('initializes from system preference if no localStorage', () => {
+      vi.stubGlobal('matchMedia', vi.fn().mockReturnValue({ matches: true }))
+      render(<StoryEditor />)
+      expect(document.documentElement.classList.contains('dark')).toBe(true)
+    })
+  })
+
   // Actually let's add it to the existing `handleChange` or `typing` test if appropriate, 
   // or a new one that mocks the state. 
   // Since I can't easily set state from outside without triggering it, I'll use the failure test and then type.
