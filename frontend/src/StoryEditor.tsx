@@ -16,6 +16,21 @@ export function StoryEditor() {
   const providerRef = useRef<ReturnType<typeof createStoryProvider> | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const prevValueRef = useRef('')
+  const [isDark, setIsDark] = useState(() => {
+    const saved = localStorage.getItem('theme')
+    if (saved) return saved === 'dark'
+    return window.matchMedia('(prefers-color-scheme: dark)').matches
+  })
+
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add('dark')
+      localStorage.setItem('theme', 'dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+      localStorage.setItem('theme', 'light')
+    }
+  }, [isDark])
 
   useEffect(() => {
     const doc = new Y.Doc()
@@ -127,9 +142,25 @@ export function StoryEditor() {
           type="text"
           value={sessionId}
           onChange={(e) => setSessionId(e.target.value || SESSION_ID)}
-          className="ml-auto px-2 py-1 border rounded text-sm"
+          className="ml-auto px-2 py-1 border rounded text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 outline-none"
           placeholder="Session ID"
         />
+        <button
+          onClick={() => setIsDark(!isDark)}
+          className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+          aria-label="Toggle theme"
+          type="button"
+        >
+          {isDark ? (
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 9h-1m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+          ) : (
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+          )}
+        </button>
       </header>
       <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center">
         <input
