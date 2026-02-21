@@ -1,0 +1,16 @@
+name: Main Branch Protection
+on:
+  pull_request:
+    branches:
+      - main
+jobs:
+  check-source-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify source branch is develop
+        if: github.base_ref == 'main' && github.head_ref != 'develop'
+        run: |
+          echo "Error: Only 'develop' branch can be merged into 'main'."
+          exit 1
+      - name: Success
+        run: echo "PR source is valid."
